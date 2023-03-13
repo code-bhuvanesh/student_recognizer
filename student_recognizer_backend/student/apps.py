@@ -1,17 +1,11 @@
 from django.apps import AppConfig
-from django.contrib import admin
-from django.urls import path, include
-from student import views
-from rest_framework import routers
+
+from backend_logic.face_features_extraction import FaceFeatureExtraction
+
 
 class StudentConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'student'
+    # def ready(self):
+    #      FaceFeatureExtraction().initilize()
 
-
-    router = routers.DefaultRouter(trailing_slash=False)
-    router.register('studentdetails', views.Student)
-
-    urlpatterns = [
-    path('', include(router.urls)),
-]

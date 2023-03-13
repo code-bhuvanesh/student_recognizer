@@ -25,6 +25,9 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void selectPhoto() async {
+    setState(() {
+      imageToShow = null;
+    });
     var file = await imagePicker.pickImage(source: ImageSource.gallery);
     if (file == null) {
       return;
@@ -33,6 +36,9 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void takePhoto() async {
+    setState(() {
+      imageToShow = null;
+    });
     var xFile = await imagePicker.pickImage(source: ImageSource.camera);
     if (xFile == null) {
       return;
@@ -73,11 +79,13 @@ class HomeScreenState extends State<HomeScreen> {
 
         setState(() {
           loading = false;
+
           if (data[0]["name"] != null) {
             currentStudent = Student.fromJson(
               Map<String, dynamic>.from(student_details[data[0]["name"]]!),
             );
             currentStudentMap = student_details[data[0]["name"]]!;
+
             showCustomDialog();
           } else {
             showDialog(
@@ -181,7 +189,7 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  File? imageToShow = null;
+  File? imageToShow;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,14 +201,6 @@ class HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
       ),
       body: Stack(children: [
-        loading
-            ? Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Color.fromARGB(106, 223, 222, 219),
-                child: const Center(child: CircularProgressIndicator()),
-              )
-            : const SizedBox.shrink(),
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -240,6 +240,14 @@ class HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+        loading
+            ? Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Color.fromARGB(167, 223, 222, 219),
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            : const SizedBox.shrink(),
       ]),
     );
   }
