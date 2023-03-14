@@ -6,8 +6,8 @@ class Student {
   final String dob;
   final String block;
   final String email;
-  final int mobileNumber;
-  final int parentsNumber;
+  final String mobileNumber;
+  final String parentsNumber;
   final String coOrdinator;
   final String boardingPoint;
   final String acedemicYear;
@@ -28,15 +28,15 @@ class Student {
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
-      regno: json["regno"],
+      regno: int.parse(json["regno"]),
       name: json["Name"],
       section: json["Section"],
       course: json["course"],
       dob: json["DOB"],
       block: json["Block"],
       email: json["Email"],
-      mobileNumber: int.parse(json["Mobile Number"]),
-      parentsNumber: int.parse(json["Parents Number"]),
+      mobileNumber: json["Mobile Number"],
+      parentsNumber: json["Parents Number"],
       coOrdinator: json["Co-ordinator"],
       boardingPoint: json["Boarding Point"],
       acedemicYear: json["Acedemic Year"],

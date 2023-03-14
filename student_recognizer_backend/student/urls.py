@@ -9,5 +9,6 @@ from rest_framework import routers
 urlpatterns = [
 path('', views.getRoutes),
 path('images/', views.showImages),
-path('upload/', views.uploadFile, name='upload_file'),
+path('upload/', views.get_student_details, name='upload_file'),
+path('register/', views.registerStudent, name='register student'),
 ]

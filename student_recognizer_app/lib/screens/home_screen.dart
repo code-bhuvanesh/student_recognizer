@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:student_recognizer/screens/constants/constants.dart';
 
 import '../env.sample.dart';
 import '../models/student.dart';
@@ -15,14 +14,57 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  String? baseUrl = Env.URL_PREFIX_LIST[0];
+  Student? currentStudent;
+  Map<String, dynamic>? currentStudentMap;
   final employeeListKey = GlobalKey<HomeScreenState>();
   late ImagePicker imagePicker;
+  File? imageToShow;
+  TextStyle infoTextStyle1 =
+      const TextStyle(fontSize: 18, fontWeight: FontWeight.w600);
+
+  TextStyle infoTextStyle2 =
+      const TextStyle(fontSize: 18, fontWeight: FontWeight.w400);
+
+  var loading = false;
 
   @override
   void initState() {
     super.initState();
     imagePicker = ImagePicker();
+    // setState(() {
+    //   loading = true;
+    // });
+    print(baseUrl);
+    // check_server();
   }
+
+  // void check_server() async {
+  //   for (var url in Env.URL_PREFIX_LIST) {
+  //     if (baseUrl == "" || baseUrl == null) {
+  //       print("trying : $url");
+  //       var response = await http.post(Uri.parse(url));
+
+  //       if (response.statusCode == 200) {
+  //         setState(() {
+  //           print("connected");
+  //           baseUrl = url;
+  //           loading = false;
+  //         });
+  //         break;
+  //       } else {
+  //         baseUrl = null;
+  //       }
+  //     }
+  //   }
+  //   if (baseUrl == null) {
+  //     print("cannot connect");
+  //     setState(() {
+  //       baseUrl = null;
+  //       loading = false;
+  //     });
+  //   }
+  // }
 
   void selectPhoto() async {
     setState(() {
@@ -32,6 +74,9 @@ class HomeScreenState extends State<HomeScreen> {
     if (file == null) {
       return;
     }
+
+    var url = '${Env.URL_PREFIX_LIST}';
+
     sendImage(file);
   }
 
@@ -46,9 +91,10 @@ class HomeScreenState extends State<HomeScreen> {
     sendImage(xFile);
   }
 
-  var loading = false;
-
   void sendImage(XFile xFile) async {
+    if (baseUrl == "" || baseUrl == null) {
+      return;
+    }
     setState(() {
       loading = true;
     });
@@ -60,7 +106,8 @@ class HomeScreenState extends State<HomeScreen> {
       setState(() {
         imageToShow = file;
       });
-      String url = '${Env.URL_PREFIX}/upload/';
+      String url = '$baseUrl/upload/';
+      print(url);
       var request = http.MultipartRequest('POST', Uri.parse(url));
       var fileStream = http.ByteStream(file.openRead());
       var fileLength = await file.length();
@@ -80,11 +127,11 @@ class HomeScreenState extends State<HomeScreen> {
         setState(() {
           loading = false;
 
-          if (data[0]["name"] != null) {
+          if (data[0]["details"] != null) {
             currentStudent = Student.fromJson(
-              Map<String, dynamic>.from(student_details[data[0]["name"]]!),
+              Map<String, dynamic>.from(data[0]["details"]),
             );
-            currentStudentMap = student_details[data[0]["name"]]!;
+            currentStudentMap = data[0]["details"];
 
             showCustomDialog();
           } else {
@@ -106,18 +153,18 @@ class HomeScreenState extends State<HomeScreen> {
         });
       } else {
         print("file not send");
+        print(response.statusCode);
       }
     } catch (error) {
       print(error);
     }
+    if (loading) {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
-  TextStyle infoTextStyle1 =
-      const TextStyle(fontSize: 18, fontWeight: FontWeight.w600);
-  TextStyle infoTextStyle2 =
-      const TextStyle(fontSize: 18, fontWeight: FontWeight.w400);
-  Student? currentStudent;
-  Map<String, dynamic>? currentStudentMap;
   void showCustomDialog() {
     if (currentStudent == null || currentStudentMap == null) {
       return;
@@ -189,7 +236,27 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  File? imageToShow;
+  Widget customButton(void Function() onpressed, String text) {
+    return GestureDetector(
+      onTap: onpressed,
+      child: Card(
+        color: Colors.deepOrange,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20),
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,55 +267,88 @@ class HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
       ),
-      body: Stack(children: [
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+      body: Container(
+        // color: Color.fromARGB(255, 226, 172, 172),
+        // color: Color.fromARGB(255, 201, 117, 117),
+        child: Stack(children: [
+          Container(
+              height: double.infinity,
+              width: double.infinity,
+              color: Color.fromARGB(255, 223, 148, 148)),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                    flex: 3,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Card(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              color: Color.fromARGB(255, 235, 227, 220),
+                              child: (imageToShow == null)
+                                  ? Image.asset("assets/images/empty_image.png")
+                                  : GestureDetector(
+                                      onDoubleTap: showCustomDialog,
+                                      child: Image.file(imageToShow!)),
+                            ),
+                          )),
+                    )),
+                Expanded(
+                  flex: 1,
                   child: Container(
-                    child: (imageToShow == null)
-                        ? Image.asset("assets/images/empty_image.png")
-                        : GestureDetector(
-                            onDoubleTap: showCustomDialog,
-                            child: Image.file(imageToShow!)),
+                    margin: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        customButton(
+                          takePhoto,
+                          " Take Photo ",
+                        ),
+                        customButton(
+                          selectPhoto,
+                          "Select photo",
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              )),
-              Container(
-                margin: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: takePhoto,
-                      child: const Text("Take  Photo"),
-                    ),
-                    ElevatedButton(
-                      onPressed: selectPhoto,
-                      child: const Text("Select photo"),
-                    ),
-                  ],
-                ),
-              ),
-              // Text(FaceName)
-            ],
+                // Text(FaceName)
+              ],
+            ),
           ),
-        ),
-        loading
-            ? Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Color.fromARGB(167, 223, 222, 219),
-                child: const Center(child: CircularProgressIndicator()),
-              )
-            : const SizedBox.shrink(),
-      ]),
+          loading
+              ? Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: Color.fromARGB(167, 223, 222, 219),
+                  child: const Center(child: CircularProgressIndicator()),
+                )
+              : const SizedBox.shrink(),
+          // (baseUrl == null)
+          //     ? Container(
+          //         width: double.infinity,
+          //         height: double.infinity,
+          //         color: Color.fromARGB(167, 223, 222, 219),
+          //         child: Column(
+          //           children: [
+          //             Text("Cannot connect to Server"),
+          //             ElevatedButton(
+          //               onPressed: check_server,
+          //               child: Text("refresh"),
+          //             )
+          //           ],
+          //         ),
+          //       )
+          //     : const SizedBox.shrink(),
+        ]),
+      ),
     );
   }
 }
