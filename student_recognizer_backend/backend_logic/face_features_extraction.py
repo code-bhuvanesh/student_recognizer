@@ -151,23 +151,25 @@ def read_all():
         except:
             print()
     return Details
+def extract_features():
+    all_path = 'E:\Projects\hackathon\student_recognizer\student_recognizer_backend\\backend_logic\student_Images'
+    all_students = os.listdir(all_path)
+    extraced_features_students = list(read_all().keys())
+    all_students.sort()
+    extraced_features_students.sort()
 
-all_path = 'E:\Projects\hackathon\student_recognizer\student_recognizer_backend\\backend_logic\student_Images'
-all_students = os.listdir(all_path)
-extraced_features_students = list(read_all().keys())
-all_students.sort()
-extraced_features_students.sort()
+    to_be_extracted_students = []
+    print(all_students)
+    print(extraced_features_students)
 
-to_be_extracted_students = []
-print(all_students)
-print(extraced_features_students)
+    print(len(all_students))
+    print(len(extraced_features_students))
+    if len(all_students) != len(extraced_features_students):
+        for s in all_students:
+            if s not in extraced_features_students:
+                to_be_extracted_students.append(s)
 
-print(len(all_students))
-print(len(extraced_features_students))
-if len(all_students) != len(extraced_features_students):
-    for s in all_students:
-        if s not in extraced_features_students:
-            to_be_extracted_students.append(s)
+    FaceFeatureExtraction().initilize(to_be_extracted_students)
+extract_features()
 
-FaceFeatureExtraction().initilize(to_be_extracted_students)
 

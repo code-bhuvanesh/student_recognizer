@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../env.sample.dart';
 import '../models/student.dart';
@@ -349,6 +350,19 @@ class HomeScreenState extends State<HomeScreen> {
           //     : const SizedBox.shrink(),
         ]),
       ),
+      // floatingActionButton: FloatingActionButton(
+      //     onPressed: () async {
+      //       String url = "http://10.240.1.128:8000/register/";
+      //       var urllaunchable = await canLaunchUrl(
+      //           Uri.parse(url)); //canLaunch is from url_launcher package
+      //       if (urllaunchable) {
+      //         await launchUrl(Uri.parse(
+      //             url)); //launch is from url_launcher package to launch URL
+      //       } else {
+      //         print("URL can't be launched.");
+      //       }
+      //     },
+      // child: Icon(Icons.add)),
     );
   }
 }

@@ -7,6 +7,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 from backend_logic import face_features_extraction
+from backend_logic.face_features_extraction import extract_features
 from .forms import StudentForm
 from .JsonParsing import add_student_to_json, get_details
 
@@ -100,6 +101,7 @@ def registerStudent(request):
             with open(file_path, 'wb+') as destination:
                 for chunk in image.chunks():
                     destination.write(chunk)
+        extract_features()
     return render(request,"register_student.html    ", context)
 
 # def registerStudent(request):
