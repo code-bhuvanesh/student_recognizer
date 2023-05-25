@@ -29,7 +29,7 @@ Student Recognizer is a mobile application that allows users to recognize and re
 2. Capture a photo of the student to recognize.
 3. The app sends the photo to the backend for facial recognition.
 4. If the student is recognized, their details are displayed.
-5. To train new students, visit `http://domainIp/register/` in a web browser. \n`eg: http://171.248.25.10:8000/register/`
+5. To train new students, visit `http://domainIp/register/` in a web browser.`eg: http://171.248.25.10:8000/register/`
 6. Fill in the student details and provide 1 to 3 photos.
 7. Submit the form to register and train the student.
 
